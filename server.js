@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
-
+import connectToMongo from './config/conneceMongo.js';
 dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
@@ -13,6 +13,7 @@ const app = express();
 app.use(express.json());
 
 app.listen(process.env.PORT, () => {
+    connectToMongo();
     console.log(`Server is running on port ${process.env.PORT}`);
 });
 
