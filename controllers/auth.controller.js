@@ -27,3 +27,17 @@ export const saveUser = async (req, res, next) => {
     next(error);
   }
 };
+
+
+export const getUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findOne({ userId });
+    if (!user) {
+      return next(new Error("User not found"));
+    }
+    fMsg(res, "User fetched successfully", user, 200);
+  } catch (error) {
+    next(error);
+  }
+};
