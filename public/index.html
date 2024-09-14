@@ -3,65 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Telegram Web App</title>
+    <title>Telegram User Profile</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body, html {
-            height: 100%;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f4f4f4;
-            font-family: Arial, sans-serif;
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .container {
-            text-align: center;
+            max-width: 500px;
+            margin-top: 50px;
         }
         .logo {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 20px;
+            width: 100px;
+            height: 100px;
+            object-fit: contain;
         }
         .user-card {
             background-color: white;
-            border-radius: 8px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .user-card-header {
+            background-color: #0088cc;
+            color: white;
             padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-width: 300px;
-            margin: 0 auto;
         }
-        .user-card h2 {
-            margin-top: 0;
+        .user-card-body {
+            padding: 30px;
         }
-        .user-card p {
-            margin: 10px 0;
-            text-align: left;
+        .user-info-item {
+            margin-bottom: 20px;
+        }
+        .user-info-label {
+            font-weight: bold;
+            color: #6c757d;
+            margin-bottom: 5px;
+        }
+        .user-info-value {
+            font-size: 1.1em;
+            background-color: #f1f3f5;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .invite-code {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #0088cc;
         }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
-        <img src="/path/to/your/logo.png" alt="Logo" class="logo">
+        <div class="text-center mb-4">
+            <img src="/path/to/your/logo.png" alt="Logo" class="logo">
+        </div>
         <div id="user-info" class="user-card">
-            <h2>User Information</h2>
-            <p>Loading...</p>
+            <div class="user-card-header">
+                <h2 class="m-0">User Profile</h2>
+            </div>
+            <div class="user-card-body">
+                <p class="text-center">Loading...</p>
+            </div>
         </div>
     </div>
     
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const tgApp = window.Telegram.WebApp;
-            const userInfoElement = document.getElementById('user-info');
+            const userInfoElement = document.querySelector('#user-info .user-card-body');
 
             function displayUserInfo(user) {
                 userInfoElement.innerHTML = `
-                    <h2>User Information</h2>
-                    <p><strong>User ID:</strong> ${user.userId}</p>
-                    <p><strong>Username:</strong> ${user.userName}</p>
-                    <p><strong>Invite Code:</strong> ${user.inviteCode}</p>
-                    <p><strong>Role:</strong> ${user.role}</p>
-                    <p><strong>Points:</strong> ${user.points}</p>
+                    <div class="user-info-item">
+                        <div class="user-info-label">Name</div>
+                        <div class="user-info-value">@${user.userName}</div>
+                    </div>
+                    <div class="user-info-item">
+                        <div class="user-info-label">Invite Code</div>
+                        <div class="user-info-value invite-code">${user.inviteCode}</div>
+                    </div>
+                    <div class="user-info-item">
+                        <div class="user-info-label">Invite Code Used By</div>
+                        <div class="user-info-value">
+                            ${user.inviteCodeUsedBy.length > 0 
+                                ? user.inviteCodeUsedBy.join(', ') 
+                                : 'Not used yet'}
+                        </div>
+                    </div>
                 `;
             }
 
@@ -74,7 +105,6 @@
                         .then(response => response.json())
                         .then(data => {
                             if (!data.con) {
-                                // User not found, proceed with save-user
                                 return fetch("/auth/save-user", {
                                     method: "POST",
                                     headers: {
@@ -96,21 +126,22 @@
                                 if (data.con) {
                                     displayUserInfo(data.result);
                                 } else {
-                                    userInfoElement.innerHTML = `<p>Error: ${data.message}</p>`;
+                                    userInfoElement.innerHTML = `<p class="text-danger">Error: ${data.message}</p>`;
                                 }
                             }
                         })
                         .catch((error) => {
                             console.error("Error:", error);
-                            userInfoElement.innerHTML = `<p>Error: ${error.message}</p>`;
+                            userInfoElement.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
                         });
                 } else {
-                    userInfoElement.innerHTML = `<p>Error: User ID not available</p>`;
+                    userInfoElement.innerHTML = `<p class="text-warning">Error: User ID not available</p>`;
                 }
             } else {
-                userInfoElement.innerHTML = `<p>Error: Telegram Web App not detected</p>`;
+                userInfoElement.innerHTML = `<p class="text-warning">Error: Telegram Web App not detected</p>`;
             }
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
