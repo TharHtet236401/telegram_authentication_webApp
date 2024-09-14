@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+    </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome to My Telegram Web App</h1>
+        <p>Your Telegram ID: <span id="telegramId">Loading...</span></p>
+        <ul>
+            <li>Item 1</li>
+            <li>Item 2</li>
+            <li>Item 3</li>
+        </ul>
+        <p>Feel free to modify this content as needed for your project.</p>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tgApp = window.Telegram.WebApp;
+            if (tgApp) {
+                const userId = tgApp.initDataUnsafe?.user?.id;
+                if (userId) {
+                    document.getElementById('telegramId').textContent = userId;
+                } else {
+                    document.getElementById('telegramId').textContent = 'Not available';
+                }
+            } else {
+                document.getElementById('telegramId').textContent = 'Telegram Web App not detected';
+            }
+        });
+    </script>
+</body>
+</html>
