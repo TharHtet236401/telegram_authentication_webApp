@@ -27,6 +27,7 @@
     <div class="container">
         <h1>Welcome to My Telegram Web App</h1>
         <p>Your Telegram ID: <span id="telegramId">Loading...</span></p>
+        <p>Your Telegram Username: <span id="telegramUsername">Loading...</span></p>
         <ul>
             <li>Item 1</li>
             <li>Item 2</li>
@@ -39,13 +40,13 @@
             const tgApp = window.Telegram.WebApp;
             if (tgApp) {
                 const userId = tgApp.initDataUnsafe?.user?.id;
-                if (userId) {
-                    document.getElementById('telegramId').textContent = userId;
-                } else {
-                    document.getElementById('telegramId').textContent = 'Not available';
-                }
+                const userName = tgApp.initDataUnsafe?.user?.username;
+                
+                document.getElementById('telegramId').textContent = userId || 'Not available';
+                document.getElementById('telegramUsername').textContent = userName || 'Not available';
             } else {
                 document.getElementById('telegramId').textContent = 'Telegram Web App not detected';
+                document.getElementById('telegramUsername').textContent = 'Not available';
             }
         });
     </script>
