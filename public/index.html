@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Telegram User Profile</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
         body {
             background-color: #f8f9fa;
@@ -19,34 +20,6 @@
             height: 100px;
             object-fit: contain;
         }
-        .user-card {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            overflow: hidden;
-        }
-        .user-card-header {
-            background-color: #0088cc;
-            color: white;
-            padding: 20px;
-        }
-        .user-card-body {
-            padding: 30px;
-        }
-        .user-info-item {
-            margin-bottom: 20px;
-        }
-        .user-info-label {
-            font-weight: bold;
-            color: #6c757d;
-            margin-bottom: 5px;
-        }
-        .user-info-value {
-            font-size: 1.1em;
-            background-color: #f1f3f5;
-            padding: 10px;
-            border-radius: 5px;
-        }
         .invite-code {
             font-size: 1.2em;
             font-weight: bold;
@@ -60,12 +33,43 @@
         <div class="text-center mb-4">
             <img src="/path/to/your/logo.png" alt="Logo" class="logo">
         </div>
-        <div id="user-info" class="user-card">
-            <div class="user-card-header">
-                <h2 class="m-0">User Profile</h2>
+        <div class="container-fluid">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title h6"><i class="fas fa-key me-2"></i>Your Invite Code</h5>
+                    <p id="inviteCode" class="invite-code mb-2"></p>
+                    <p class="card-text text-muted small">Share this code with friends!</p>
+                </div>
             </div>
-            <div class="user-card-body">
-                <p class="text-center">Loading...</p>
+            
+            <div class="row row-cols-1 row-cols-md-2 g-3">
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title h6"><i class="fas fa-users me-2"></i>Invites Used</h5>
+                            <p id="inviteCount" class="fs-4 fw-bold mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title h6"><i class="fas fa-coins me-2"></i>Your Points</h5>
+                            <p id="userPoints" class="fs-4 fw-bold mb-0"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-3">
+                <div class="card-body">
+                    <h5 class="card-title h6"><i class="fas fa-share-alt me-2"></i>Share Your Code</h5>
+                    <p class="card-text small">Invite friends to earn more rewards!</p>
+                    <button id="shareBtn" class="btn btn-primary btn-sm mt-2">
+                        <i class="fas fa-share me-1"></i>Share Now
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -73,27 +77,15 @@
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const tgApp = window.Telegram.WebApp;
-            const userInfoElement = document.querySelector('#user-info .user-card-body');
+            const inviteCodeElement = document.getElementById('inviteCode');
+            const inviteCountElement = document.getElementById('inviteCount');
+            const userPointsElement = document.getElementById('userPoints');
+            const shareBtnElement = document.getElementById('shareBtn');
 
             function displayUserInfo(user) {
-                userInfoElement.innerHTML = `
-                    <div class="user-info-item">
-                        <div class="user-info-label">Name</div>
-                        <div class="user-info-value">@${user.userName}</div>
-                    </div>
-                    <div class="user-info-item">
-                        <div class="user-info-label">Invite Code</div>
-                        <div class="user-info-value invite-code">${user.inviteCode}</div>
-                    </div>
-                    <div class="user-info-item">
-                        <div class="user-info-label">Invite Code Used By</div>
-                        <div class="user-info-value">
-                            ${user.inviteCodeUsedBy.length > 0 
-                                ? user.inviteCodeUsedBy.join(', ') 
-                                : 'Not used yet'}
-                        </div>
-                    </div>
-                `;
+                inviteCodeElement.textContent = user.inviteCode;
+                inviteCountElement.textContent = user.inviteCodeUsedBy.length;
+                userPointsElement.textContent = user.points;
             }
 
             if (tgApp) {
@@ -126,19 +118,23 @@
                                 if (data.con) {
                                     displayUserInfo(data.result);
                                 } else {
-                                    userInfoElement.innerHTML = `<p class="text-danger">Error: ${data.message}</p>`;
+                                    console.error("Error:", data.message);
                                 }
                             }
                         })
                         .catch((error) => {
                             console.error("Error:", error);
-                            userInfoElement.innerHTML = `<p class="text-danger">Error: ${error.message}</p>`;
                         });
                 } else {
-                    userInfoElement.innerHTML = `<p class="text-warning">Error: User ID not available</p>`;
+                    console.warn("User ID not available");
                 }
+
+                shareBtnElement.addEventListener('click', function() {
+                    const inviteCode = inviteCodeElement.textContent;
+                    tgApp.shareInviteLink(`Join using my invite code: ${inviteCode}`);
+                });
             } else {
-                userInfoElement.innerHTML = `<p class="text-warning">Error: Telegram Web App not detected</p>`;
+                console.warn("Telegram Web App not detected");
             }
         });
     </script>
